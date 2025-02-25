@@ -143,7 +143,7 @@ async function signUpUser(req, res) {
     }
 
     // Validate password: Min 8 chars, 1 uppercase, 1 special char, no spaces
-    const passwordRegex = /^(?=.[A-Z])(?=.[@#$%^&+=!])(?=\S+$).{8,}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\S+$).{8,}$/;
     if (!errorMessage && !passwordRegex.test(password)) {
       errorMessage = "Password must be at least 8 characters, include one uppercase letter, one special character, and contain no spaces!";
     }
@@ -186,6 +186,7 @@ async function signUpUser(req, res) {
     `);
   }
 }
+
 // User Sign-in
 function renderSignInPage(req, res) {
   res.render("signin");
