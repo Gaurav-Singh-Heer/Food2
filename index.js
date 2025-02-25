@@ -126,6 +126,45 @@ function renderSignUpPage(req, res) {
 async function signUpUser(req, res) {
   const { name, address, email, mobile, password } = req.body;
   try {
+    let errorMessage = null;
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      errorMessage = "Invalid email format! Please re-enter.";
+    }
+
+    // Check if email already exists
+    if (!errorMessage) {
+      const existingUser = await User.findOne({ user_email: email });
+      if (existingUser) {
+        errorMessage = "Email already registered! Please use another.";
+      }
+    }
+
+    // Validate password: Min 8 chars, 1 uppercase, 1 special char, no spaces
+    const passwordRegex = /^(?=.[A-Z])(?=.[@#$%^&+=!])(?=\S+$).{8,}$/;
+    if (!errorMessage && !passwordRegex.test(password)) {
+      errorMessage = "Password must be at least 8 characters, include one uppercase letter, one special character, and contain no spaces!";
+    }
+
+    // Validate mobile number format (10 digits)
+    const mobileRegex = /^\d{10}$/;
+    if (!errorMessage && !mobileRegex.test(mobile)) {
+      errorMessage = "Invalid mobile number! Must be 10 digits.";
+    }
+
+    // If validation fails, show an alert and redirect back to signup
+    if (errorMessage) {
+      return res.send(`
+        <script>
+          alert("${errorMessage}");
+          window.history.back(); // Goes back to the previous page
+        </script>
+      `);
+    }
+
+    // Save new user if all validations pass
     const newUser = new User({
       user_name: name,
       user_address: address,
@@ -134,13 +173,19 @@ async function signUpUser(req, res) {
       user_mobileno: mobile,
     });
     await newUser.save();
-    res.render("signin");
+
+    // Redirect to signin page without an alert box
+    res.redirect("/signin");
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    res.send(`
+      <script>
+        alert("Registration failed. Please try again.");
+        window.history.back();
+      </script>
+    `);
   }
 }
-
 // User Sign-in
 function renderSignInPage(req, res) {
   res.render("signin");
@@ -280,24 +325,61 @@ async function renderAdminSignUpPage(req, res) {
 // Function to handle Admin Signup
 async function adminSignUp(req, res) {
   const { admin_name, admin_email, admin_password } = req.body;
-  console.log(admin_email)
   try {
-    const existingAdmin = await Admin.findOne({ admin_email });
-    if (existingAdmin) {
-      return res.status(400).send("Admin already exists");
+    let errorMessage = null;
+
+    // Validation: Check if fields are empty
+    if (!admin_name || !admin_email || !admin_password) {
+      errorMessage = "All fields are required!";
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!errorMessage && !emailRegex.test(admin_email)) {
+      errorMessage = "Invalid email format!";
+    }
+
+    // Check if admin email already exists
+    if (!errorMessage) {
+      const existingAdmin = await Admin.findOne({ admin_email });
+      if (existingAdmin) {
+        errorMessage = "Admin already exists!";
+      }
+    }
+
+    // Validate password: Min 8 chars, 1 uppercase, 1 special char, no spaces
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\S+$).{8,}$/;
+    if (!errorMessage && !passwordRegex.test(admin_password)) {
+      errorMessage = "Password must be at least 8 characters, include one uppercase letter, one special character, and contain no spaces!";
+    }
+
+    // If validation fails, show an alert and redirect back to admin signup
+    if (errorMessage) {
+      return res.send(`
+        <script>
+          alert("${errorMessage}");
+          window.history.back(); // Goes back to the previous page
+        </script>
+      `);
+    }
+
+    // Save new admin if all validations pass
     const newAdmin = new Admin({
       admin_name,
       admin_email,
-      admin_password: admin_password,
+      admin_password,
     });
 
     await newAdmin.save();
     res.redirect("/admin_signin"); // Redirect to admin signin page
   } catch (error) {
     console.error("Admin signup error:", error);
-    res.status(500).send("Server error");
+    res.send(`
+      <script>
+        alert("Server error. Please try again.");
+        window.history.back();
+      </script>
+    `);
   }
 }
 
