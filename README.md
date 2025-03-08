@@ -116,13 +116,7 @@ If Cloudinary is **not uploading images in production**, check the following:
        secure: true
    });
    ```
-5. If using **Render, Vercel, or Heroku**, ensure **environment variables are set in the dashboard**.
-
----
-
-## 👨‍💻 Contributors
-💡 **Developed as part of the Somnium Hackathon.**  
-Contributors: [Your Name], [Team Members]
+5. If using **Render or Vercel**, ensure **environment variables are set in the dashboard**.
 
 ---
 
