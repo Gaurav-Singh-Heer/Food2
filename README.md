@@ -120,5 +120,15 @@ If Cloudinary is **not uploading images in production**, check the following:
 
 ---
 
-## 📜 License
-This project is licensed under the **MIT License**.
+# Results  
+
+You can check the **Results** folder, which contains the Excel sheets for **Day 1** and **Day 2** scores.  
+
+## Day 1  
+![Day 1 Results](Result/Day_1_1.jpg)  
+![Day 1 Results](Result/Day_1_2.jpg)  
+
+## Day 2  
+![Day 2 Results](Result/Day_2_1.jpg)  
+
+---  
